@@ -4,7 +4,36 @@ public class BinarySearchTree {
 	public BinarySearchTree() {
 		this.root = null;
 	}
-	public Node find(int key) {
+	private static void goTo(Node node, String str) {
+		goTo(node.getLeft(), str);
+		str+=(char) (node.getKey());
+		goTo(node.getRight(), str);
+	}
+	private static void getMid(int start, int end, String str) {
+		if (start == end) {
+			str += (char) (start);
+			return;
+		}
+		int mid = (end - start + 1) / 2;
+		str+=(char) (mid);
+		getMid(start, mid, str);
+		getMid(mid + 1, end, str);
+	}
+	public BinarySearchTree buildAgain() {
+		Node node = this.root;
+		String str = new String();
+		str = "";
+		goTo(node, str);
+		int n = str.length();
+		char a[] = str.toCharArray();
+		str = "";
+		getMid(1, n, str);
+		char b[] = str.toCharArray();
+		BinarySearchTree newBST = new BinarySearchTree();
+		for (int i = 0; i < n; i++) newBST.add(a[b[i]-1]);
+		return new BinarySearchTree();
+	}
+	private Node find(int key) {
 		Node current = this.root;
 		while (current != null) {
 			if (current.getKey() == key) return current;
@@ -13,7 +42,7 @@ public class BinarySearchTree {
 		}
 		return null;
 	}
-	public Node findDad(int key) {
+	private Node findDad(int key) {
 		Node current = this.root;
 		Node dad = null;
 		while (current != null) {
@@ -52,30 +81,34 @@ public class BinarySearchTree {
 			}
 		}
 	}
+	private int searchLeft(Node node) {
+		while (node.getRight() != null) {
+			node = node.getRight();
+		}
+		Node dad = findDad(node.getKey());
+		if (dad.getKey() > node.getKey()) dad.setLeft(node.getLeft());
+		else dad.setRight(node.getLeft());
+		return node.getKey();
+	}
+	private int searchRight(Node node) {
+		while (node.getLeft() != null) {
+			node = node.getLeft();
+		}
+		Node dad = findDad(node.getKey());
+		if (dad.getKey() > node.getKey()) dad.setLeft(node.getRight());
+		else dad.setRight(node.getRight());
+		return node.getKey();
+	}
 	public void delete(int key) {
 		Node top = find(key);
 		Node current = top;
 		if (top == null) return;	
 		
 		if (current.getLeft() != null) {
-			current = current.getLeft();
-			while (current.getRight() != null) {
-				current = current.getRight();
-			}
-			Node dad = findDad(current.getKey());
-			if (dad.getKey() > current.getKey()) dad.setLeft(current.getLeft());
-			else dad.setRight(current.getLeft());
-			top.setKey(current.getKey());
+			top.setKey(searchLeft(current.getLeft()));
 		}
 		else if (current.getRight() != null) {
-			current = current.getRight();
-			while (current.getLeft() != null) {
-				current = current.getLeft();
-			}
-			Node dad = findDad(current.getKey());
-			if (dad.getKey() > current.getKey()) dad.setLeft(current.getRight());
-			else dad.setRight(current.getRight());
-			top.setKey(current.getKey());
+			top.setKey(searchRight(current.getRight()));
 		}
 		else {
 			if (key == root.getKey()) {

@@ -12,6 +12,7 @@ public class BST {
 		BST.print(BST.root);
 		BST.delete(6);
 		BST.print(BST.root);
+		System.gc();
 		//System.out.println(BST.findDad(5).getKey());
 		input.close();
 	}
